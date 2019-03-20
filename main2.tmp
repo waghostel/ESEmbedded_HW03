@@ -1,0 +1,57 @@
+
+
+void fun_na_nr(void);
+void fun_wa_nr(int a2, int *b2);
+int fun_na_wr(void);
+int fun_wa_wr(int a4, int *b4);
+void reset_handler(void)
+{
+	//Varables to be used
+	int arr[3]={10, 20, 30};
+	int pitcher=8; //varable to pass into the function
+	int catcher; //Uninitialized varable to receive return value from function
+	
+	//Ex1: call fun without argument and return value
+	fun_na_nr();
+
+	//Ex2: call fun with argument without return value
+	fun_wa_nr(pitcher, arr[0]);
+
+	//Ex3: call fun without argument with return value
+	catcher=fun_na_wr();
+
+	//Ex4: call fun with argument with return value
+	catcher=fun_wa_wr(pitcher,arr[1]);
+
+	while (1)
+		;
+}
+
+//Function with no argument no return value
+void fun_na_nr(void){
+	int a1=1;
+	int b1=2;
+	int sum1=a1+b1;
+}
+
+//Function with argument and return value
+void fun_wa_nr(int a2, int *b2){
+int c2=3;
+int sum2=a2+b2+c2;
+}
+
+
+//function without argument with return value
+int fun_na_wr(void){
+int a3=4;
+int b3=5;
+
+return a3+b3;
+
+}
+
+//function with argument and return value
+int fun_wa_wr(int a4, int *b4){
+int r4=a4+b4;
+return r4;
+}
