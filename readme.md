@@ -62,7 +62,7 @@ This is the hw03 sample. Please follow the steps below.
 
 ## **實驗步驟**
 1. **程式撰寫**: 轉寫c function call程式
-2. **make編譯程式**: 以 `**make**` 指令編譯程式
+2. **make編譯程式**: 以 `make` 指令編譯程式
 3. **objdump反組譯**: 執行objdump指令反組譯程式，並觀察組合語言的內容。objdump指令
 4. **qemu虛擬機計算逐步執行**: 以qemu虛擬機觀察c function程式在暫存器上的執行結果。
 
@@ -70,10 +70,10 @@ This is the hw03 sample. Please follow the steps below.
 ----------
 ## **撰寫程式**
 
-main.c程式包含有 `**add(int a, int b) function**`，及`**a**`, `**b**`, `**c**`, `**d**`四個變數。
+main.c程式包含有 `add(int a, int b) function`，及`a`, `b`, `c`, `d`四個變數。
 
 **變數設計**
-`**a**`變數的目的是要測試在進入到`**reset_handler(void)**`函式之前，是否可以在暫存器或記憶體空間中找到`**a**`變數。`**b**`和`**c**`變數的設計目的在找到被分配到stack 記憶體所在的位置。`**d**`變數用於確認進入到`**while(1)**`迴圈之前的所在位置，以及最終變數會被寫入到記憶體的位置。
+`**a**`變數的目的是要測試在進入到`reset_handler(void)`函式之前，是否可以在暫存器或記憶體空間中找到`a`變數。`b`和`c`變數的設計目的在找到被分配到stack 記憶體所在的位置。`d`變數用於確認進入到`while(1)`迴圈之前的所在位置，以及最終變數會被寫入到記憶體的位置。
 
 **函數設計**
 為了觀察記憶體分配、在組合語言中執行順序的跳轉，設計有add()函數如下:
@@ -83,7 +83,7 @@ main.c程式包含有 `**add(int a, int b) function**`，及`**a**`, `**b**`, `*
         return a+b;
     }
 
-由c語言的設計原理，此處的a和b因為不是指標，所以會被分配額外的記憶體空間，在`**a+b**`計算完成後，會把計算結果回傳到呼叫此函式的`**reset_handler(void)**`中，
+由c語言的設計原理，此處的a和b因為不是指標，所以會被分配額外的記憶體空間，在`a+b`計算完成後，會把計算結果回傳到呼叫此函式的`reset_handler(void)`中，
 
 
     int add(int a, int b);
@@ -199,13 +199,13 @@ main.c程式包含有 `**add(int a, int b) function**`，及`**a**`, `**b**`, `*
 
 ## **qemu虛擬機計算逐步執行**
 
-由qemu執行結果可以看出，在逐步執行過程中的記憶體分配方式，在進入到`**reset_handler(void)**`後，程式會預留**16 bits**的空間，首先，程式會將 `**b**` , `**c**` 放入到 `**0xf4**` ****和 `**0xf0**` 中，此時 `**0xec**`和 `**0xe8**`還是空的狀態。
+由qemu執行結果可以看出，在逐步執行過程中的記憶體分配方式，在進入到`reset_handler(void)`後，程式會預留**16 bits**的空間，首先，程式會將 `b` , `c` 放入到 `0xf4` ****和 `**0xf0**` 中，此時 `**0xec**`和 `**0xe8**`還是空的狀態。
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553062201443_image.png)
 
 
 
-在進入到`**add()**` 函式之前，會先額外分配16bit的空間，並且將 `**sp**` 指向的 `**0x200000e8**` 位置存放到 `**0xe4**` 的位置。在進入到function後，會在 `**0xdc**`和 `**0xd8**`的位置儲存`**a=2**`和 `**b=3**`的值，在加總完成後會先跳轉回去 `**lr**` 指向的位置，並且把`**a+b**`的數值儲存到`**0xec**` ****的位置，最後再將`d=7`的數值填入`0xe8`的位置。
+在進入到`add()` 函式之前，會先額外分配16bit的空間，並且將 `sp` 指向的 `0x200000e8` 位置存放到 `0xe4` 的位置。在進入到function後，會在 `0xdc`和 `0xd8`的位置儲存`a=2`和 `b=3`的值，在加總完成後會先跳轉回去 `**lr**` 指向的位置，並且把`a+b`的數值儲存到`0xec` ****的位置，最後再將`d=7`的數值填入`0xe8`的位置。
 
 
 
@@ -214,36 +214,36 @@ main.c程式包含有 `**add(int a, int b) function**`，及`**a**`, `**b**`, `*
 
 
 **跳轉**
-觀察進入function的方式，是透過`**bl 0x28**`去跳轉到`**0x28**`的位置。
+觀察進入function的方式，是透過`bl 0x28`去跳轉到`0x28`的位置。
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063052224_image.png)
 
 
-跳轉完成後，會讓`**sp**`指向`**0xe4**`的位置，並將`**0xd8**`儲存到`**r7**`，做為在function中的記憶體控制。
+跳轉完成後，會讓`sp`指向`0xe4`的位置，並將`0xd*`儲存到`r7`，做為在function中的記憶體控制。
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063588716_image.png)
 
 
-`**r7**`的位置重新為`**0xd8**`
+`r7`的位置重新為`0xd8`
 
 ![r7改變前](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063653886_image.png)
 
 ![r7改變後1](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063678649_image.png)
 
 
-`**r7**` 的位置被儲存到`**sp**`，代表程式重新開始使用在`**reset_handler(void)**`的記憶體空間。
+`r7` 的位置被儲存到`sp`，代表程式重新開始使用在`reset_handler(void)`的記憶體空間。
 
 ![r7改變後2](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063747901_image.png)
 
 
 跳轉前後的差異
-`**bx lr**`之前，程式在`**0x42**`的位置。
+`bx lr`之前，程式在`0x42`的位置。
 
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063904555_image.png)
 
 
-在`**bx lr**`執行完成後，程式會要回到`**0x1e**`的位置繼續執行`**reset_handler(void)**`的剩餘內容。
+在`bx lr`執行完成後，程式會要回到`0x1e`的位置繼續執行`reset_handler(void)`的剩餘內容。
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_C8651D5AF17B581D702C75854A39A640311C6AE7BFF9B88677BE4DB0B45F01B2_1553063968082_image.png)
 
